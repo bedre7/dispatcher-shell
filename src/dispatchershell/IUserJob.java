@@ -1,5 +1,7 @@
 package dispatchershell;
 
-public interface IUserJob {
-
+public interface IUserJob{
+	void runningProcess() {
+		
+	}
 }
