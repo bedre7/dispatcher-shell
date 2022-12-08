@@ -66,5 +66,28 @@ public class Process implements IProcess {
 	public Priority getPriority() {
 		return this.priority;
 	}
+
+	@Override
+	public void reducePriority() {
+		
+		switch(this.getPriority()) {
+		
+		case HIGHESTPRIORITY:{
+			this.setPriority(Priority.MEDIUMPRIORITY);
+			break;
+		}
+		case MEDIUMPRIORITY:{
+			this.setPriority(Priority.LOWESTPRIORITY);
+			break;
+		}
+		case LOWESTPRIORITY:{
+			//Do nothing
+			break;
+		}
+		default:
+			break;
+		
+		}
+	}
 	
 }

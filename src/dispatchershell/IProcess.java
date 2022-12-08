@@ -23,4 +23,5 @@ public interface IProcess {
 	
 	public void setPriority(Priority priority) ;
 	public Priority getPriority() ;
+	public void reducePriority();
 }

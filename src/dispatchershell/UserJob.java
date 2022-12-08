@@ -25,11 +25,27 @@ public class UserJob implements IUserJob{
 
 	@Override
 	public void run() {
-		
-		
+		for(int i=0; i<SIZE-1; i++)
+		{
+			IProcess removedProcess=null;
+			
+			if(!processQueue[i].isEmpty()) {
+				for(int j=0; j<this.QUANTUM; j++) {
+					removedProcess=processQueue[i].remove();
+					Timer.tick();
+				}
+				if(i+1<SIZE-1) {
+					removedProcess.reducePriority();
+					this.processQueue[i+1].add(removedProcess);
+				}else {
+					processQueue[i].add(removedProcess);
+				}
+				return;
+			}	
+		}
 	}
 	
-	@Override
+	@Override	
 	public boolean hasProcess() {	
 		for(int priority=0; priority<SIZE-1; priority++) {
 			if(!processQueue[priority].isEmpty()) return true;
@@ -43,15 +59,15 @@ public class UserJob implements IUserJob{
 		switch(process.getPriority()) {
 		
 		case HIGHESTPRIORITY:{
-			
+			processQueue[HIGHESTPRIORITY].add(process);
 			break;
 		}
 		case MEDIUMPRIORITY:{
-			
+			processQueue[MEDIUMPRIORITY].add(process);
 			break;
 		}
 		case LOWESTPRIORITY:{
-			
+			processQueue[LOWESTPRIORITY].add(process);
 			break;
 		}
 		default:
