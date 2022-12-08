@@ -2,7 +2,7 @@ package dispatchershell;
 
 public class Console {
 	
-	public void log(String text)
+	public static void log(String text)
 	{
 		System.out.println(text);
 	}
