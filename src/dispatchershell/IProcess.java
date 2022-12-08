@@ -1,7 +1,8 @@
 package dispatchershell;
 
 public interface IProcess {
-	boolean isRealTime();
+	public boolean isRealTime();
+
 	public int getId() ;
 
 	public void setId(int id);
