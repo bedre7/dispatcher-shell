@@ -6,9 +6,8 @@ public interface IProcess {
 
 	public void setId(int id);
 
-	public String getColor() ;
+	public Color getColor() ;
 
-	public void setColor(String color) ;
 	public int getArrivalTime() ;
 
 	public void setArrivalTime(int arrivalTime) ;

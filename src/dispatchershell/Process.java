@@ -32,12 +32,8 @@ public class Process implements IProcess {
 		Id = id;
 	}
 
-	public String getColor() {
+	public Color getColor() {
 		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
 	}
 
 	public int getArrivalTime() {
