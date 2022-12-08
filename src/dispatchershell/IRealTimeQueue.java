@@ -1,5 +1,8 @@
 package dispatchershell;
 
-public interface IRealTimeQueue extends IProcessQueue {
-    void run();
+public interface IRealTimeQueue {
+	void add(IProcess process);
+    IProcess remove();
+    boolean isEmpty();
+	void run();
 }

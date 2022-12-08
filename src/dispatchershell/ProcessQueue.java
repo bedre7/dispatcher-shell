@@ -1,23 +1,26 @@
 package dispatchershell;
 
-public class ProcessQueue implements IProcessQueue {
+import java.util.LinkedList;
+import java.util.Queue;
 
+public class ProcessQueue implements IProcessQueue {
+	Queue<IProcess> queue;
+	public ProcessQueue() {
+		queue=new LinkedList<IProcess>();
+	}
 	@Override
 	public void add(IProcess process) {
-		// TODO Auto-generated method stub
-		
+		queue.add(process);
 	}
 
 	@Override
 	public IProcess remove() {
-		// TODO Auto-generated method stub
-		return null;
+		return queue.remove();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return queue.isEmpty();
 	}
 	
 }
