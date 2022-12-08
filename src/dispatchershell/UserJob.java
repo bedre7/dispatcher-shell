@@ -1,7 +1,8 @@
 package dispatchershell;
 
 public class UserJob implements IUserJob{
-
+	private Queue<IProcess> processQueue;
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub

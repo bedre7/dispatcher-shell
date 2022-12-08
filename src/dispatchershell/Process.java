@@ -8,7 +8,6 @@ public class Process implements IProcess {
 	private int elapsedTime;
 	private Priority priority;
 	
-	
 	public Process(int arrivalTime, Priority priority, int burstTime, Color color) {
 		this.arrivalTime=arrivalTime;
 		this.priority=priority;
@@ -16,6 +15,11 @@ public class Process implements IProcess {
 		this.color=color;
 		this.elapsedTime=0;
 		
+	}
+	
+	@Override
+	public void execute(int time) {
+		this.elapsedTime += time;
 	}
 	
 	@Override
@@ -66,5 +70,4 @@ public class Process implements IProcess {
 	public Priority getPriority() {
 		return this.priority;
 	}
-	
 }

@@ -13,14 +13,16 @@ public class Dispatcher implements IDispatcher{
 	private String filePath;
 	private Color[] colors;
 	private List<IProcess> waitingProcesses;
+	private final int QUANTUM = 1;
+	private int currentTime;
 
 	public Dispatcher(String filePath)
 	{
-		
 		this.realTimeQueue = new RealTimeQueue();
 		this.userJob = new UserJob();
 		this.waitingProcesses = new LinkedList<IProcess>();
 		this.filePath = filePath;
+		this.currentTime = 0;
 		this.colors = new Color[]{
 			Color.BLUE, Color.CYAN, 
 			Color.GREEN, Color.PURPLE, 
@@ -38,7 +40,8 @@ public class Dispatcher implements IDispatcher{
 	}
 
 	@Override
-	public void readFile() {
+	public IDispatcher readFile() 
+	{
 		final String separator = ",";
 		
 		try(BufferedReader br = new BufferedReader(new FileReader(this.filePath))) {
@@ -63,7 +66,44 @@ public class Dispatcher implements IDispatcher{
 		catch(IOException e) {
 			e.printStackTrace();
 		}
+		
+		return this;
 	}
+	
+	@Override
+	public void start() 
+	{
+		while(true)
+		{
+			this.currentTime = Timer.getCurrentTime();
+			for (int i = 0; i < this.waitingProcesses.size(); i++)
+			{
+				IProcess process = this.waitingProcesses.get(i);
+				if (this.processHasArrived(process))
+				{
+					if(process.isRealTime())
+					{
+						this.realTimeQueue.add(process);
+						this.realTimeQueue.run();
+					}
+					else 
+					{
+						this.userJob.distribute(process);
+					}
+				}
+				
+				
+				this.userJob.run();
+				Timer.tick();
+			}
+			
+			this.currentTime = Timer.getCurrentTime();
+		}
+		
+		while(useJob.is)
+			
+	}
+	
 	
 	@Override
 	public Color getRandomColor()
@@ -83,5 +123,11 @@ public class Dispatcher implements IDispatcher{
 			case 3 -> Priority.LOWESTPRIORITY;
 			default -> null;	
 		};
+	}
+
+	@Override
+	public boolean processHasArrived(IProcess process) {
+		
+		return this.currentTime >= process.getArrivalTime();
 	}
 }
