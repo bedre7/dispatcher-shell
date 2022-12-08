@@ -9,13 +9,13 @@ public class ProcessQueue implements IProcessQueue {
 	}
 
 	@Override
-	public IProcess remove(IProcess process) {
+	public IProcess remove() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean isEmpty(IProcess process) {
+	public boolean isEmpty() {
 		// TODO Auto-generated method stub
 		return false;
 	}

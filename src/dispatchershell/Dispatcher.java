@@ -18,4 +18,10 @@ public class Dispatcher implements IDispatcher{
 		}
 		return instance;
 	}
+
+	@Override
+	public void readFile() {
+		// TODO Auto-generated method stub
+		
+	}
 }
