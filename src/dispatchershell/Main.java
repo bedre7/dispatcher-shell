@@ -3,8 +3,12 @@ package dispatchershell;
 public class Main {
 	public static void main(String[] args) {
 		String YELLOW = "\u001B[33m";
-		IDispatcher dispatcher = Dispatcher.getInstance("input.txt");
-		dispatcher.readFile();
+		try {
+			IDispatcher dispatcher = Dispatcher.getInstance("input.txt");			
+			dispatcher.readFile();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		System.out.println(Color.BLUE.getColor() + "Hello there");
 		System.out.println(Color.CYAN.getColor() + "Hello there");
 		System.out.println(Color.GREEN.getColor() + "Hello there");
