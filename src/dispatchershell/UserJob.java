@@ -1,5 +1,5 @@
 package dispatchershell;
 
-public class UserJob {
+public class UserJob implements IUserJob{
 	
 }
