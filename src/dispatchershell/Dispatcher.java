@@ -14,12 +14,13 @@ public class Dispatcher implements IDispatcher{
 	private String filePath;
 	private Color[] colors;
 	private List<IProcess> waitingProcesses;
-	private final int QUANTUM = 1;
+	private int quantum = 1;
 	private int currentTime;
 
-	public Dispatcher(String filePath)
+	public Dispatcher(String filePath, int quantum)
 	{
 		this.currentTime = 0;
+		this.quantum = quantum;
 		this.realTimeQueue = new RealTimeQueue();
 		this.userJob = new UserJob();
 		this.waitingProcesses = new LinkedList<IProcess>();
@@ -132,6 +133,12 @@ public class Dispatcher implements IDispatcher{
 	@Override
 	public boolean processHasArrived(IProcess process) {
 		
-		return this.currentTime >= process.getArrivalTime();
+		if (this.currentTime >= process.getArrivalTime()) {
+			process.setState(State.READY);
+			
+			return true;
+		}
+		
+		return false;
 	}
 }
