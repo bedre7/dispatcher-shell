@@ -5,9 +5,11 @@ import java.util.Queue;
 
 public class RealTimeQueue implements IRealTimeQueue {
 	Queue<IProcess> queue;
+	
 	public RealTimeQueue() {
-		queue=new LinkedList<IProcess>();
+		queue = new LinkedList<IProcess>();
 	}
+	
 	@Override
 	public void add(IProcess process) {
 		queue.add(process);
@@ -22,6 +24,7 @@ public class RealTimeQueue implements IRealTimeQueue {
 	public boolean isEmpty() {
 		return queue.isEmpty();
 	}
+	
 	@Override
 	public void run() 
 	{

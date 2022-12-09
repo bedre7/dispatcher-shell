@@ -17,6 +17,10 @@ public interface IProcess {
 	public void setBurstTime(int burstTime) ;
 
 	public int getElapsedTime() ;
+	
+	public State getState();
+
+	public void setState(State state);
 
 	public void setElapsedTime(int elapsedTime);
 	
@@ -26,5 +30,10 @@ public interface IProcess {
 	
 	public void reducePriority();
 	
-	public void execute(int quantum);
+	public State execute(int quantum, int maxExecutionTime);
+	
+	public boolean isOver();
+	
+	public boolean hasExceededTimeLimit(int limit);
+	
 }
