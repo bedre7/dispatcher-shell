@@ -23,8 +23,9 @@ public class Dispatcher implements IDispatcher{
 		this.currentTime = 0;
 		this.maxExecutionTime = maxExecutionTime;
 		this.quantum = quantum;
-		this.realTimeQueue = new RealTimeQueue(maxExecutionTime);
-		this.userJob = new UserJob(quantum, maxExecutionTime);
+		this.filePath = filePath;
+		this.realTimeQueue = new RealTimeQueue(this.maxExecutionTime);
+		this.userJob = new UserJob(this.quantum, this.maxExecutionTime);
 		this.waitingProcesses = new LinkedList<IProcess>();
 		this.colors = new Color[]{
 			Color.BLUE, Color.CYAN, 
