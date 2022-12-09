@@ -3,5 +3,7 @@ package dispatchershell;
 public interface IUserJob{
 	void run();
 	void distribute(IProcess process);
-	boolean hasProcess();
+	public boolean hasProcess();
+	public boolean hasExceededTimeLimit(IProcess process);
+	
 }

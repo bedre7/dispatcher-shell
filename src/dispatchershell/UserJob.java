@@ -6,12 +6,14 @@ import java.util.Queue;
 
 public class UserJob implements IUserJob{
 	
+	private final int MAXEXCUTIONTIME=20;
 	private final int SIZE;
 	private final int QUANTUM=1;
 	private Queue<IProcess>[] processQueue;
 	private final int HIGHESTPRIORITY=0;
 	private final int MEDIUMPRIORITY=1;
 	private final int LOWESTPRIORITY=2;
+	
 	
 	
 	public UserJob() {
@@ -74,5 +76,10 @@ public class UserJob implements IUserJob{
 			break;
 		
 		}
+	}
+
+	@Override
+	public boolean hasExceededTimeLimit(IProcess process) {
+		return process.getElapsedTime()>=this.MAXEXCUTIONTIME;
 	}
 }
