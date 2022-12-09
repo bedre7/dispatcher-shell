@@ -20,6 +20,9 @@ public class Dispatcher implements IDispatcher{
 	public Dispatcher(String filePath)
 	{
 		this.currentTime = 0;
+		this.realTimeQueue = new RealTimeQueue();
+		this.userJob = new UserJob();
+		this.waitingProcesses = new LinkedList<IProcess>();
 		this.colors = new Color[]{
 			Color.BLUE, Color.CYAN, 
 			Color.GREEN, Color.PURPLE, 
@@ -72,10 +75,9 @@ public class Dispatcher implements IDispatcher{
 	{
 		while(!this.waitingProcesses.isEmpty())
 		{
-			this.currentTime = Timer.getCurrentTime();
-			for (int i = 0; i < this.waitingProcesses.size(); i++)
+//			this.currentTime = Timer.getCurrentTime();
+			for (IProcess process : new LinkedList<IProcess>(this.waitingProcesses))
 			{
-				IProcess process = this.waitingProcesses.get(i);
 				if (this.processHasArrived(process))
 				{
 					if(process.isRealTime())
@@ -86,7 +88,6 @@ public class Dispatcher implements IDispatcher{
 					else 
 					{
 						this.userJob.distribute(process);
-						
 					}
 
 					this.waitingProcesses.remove(process);
@@ -94,7 +95,7 @@ public class Dispatcher implements IDispatcher{
 				
 				if (this.userJob.hasProcess())
 				{
-					this.userJob.run();					
+					this.userJob.run();			
 				}
 			}
 			

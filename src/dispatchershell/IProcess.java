@@ -21,6 +21,10 @@ public interface IProcess {
 	public void setElapsedTime(int elapsedTime);
 	
 	public void setPriority(Priority priority) ;
-	public Priority getPriority() ;
+	
+	public Priority getPriority();
+	
 	public void reducePriority();
+	
+	public void execute(int quantum);
 }
