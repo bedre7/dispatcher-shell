@@ -18,9 +18,10 @@ public class Process implements IProcess {
 	}
 	
 	@Override
-	public void execute(int time) {
-		this.elapsedTime += time;
+	public void execute(int quantum) {
+		this.elapsedTime += quantum;
 	}
+	
 	
 	@Override
 	public boolean isRealTime() {
