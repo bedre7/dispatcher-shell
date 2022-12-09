@@ -23,7 +23,8 @@ public class RealTimeQueue implements IRealTimeQueue {
 		return queue.isEmpty();
 	}
 	@Override
-	public void run() {
+	public void run() 
+	{
 		
 	}
 

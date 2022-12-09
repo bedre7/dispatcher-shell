@@ -2,6 +2,7 @@ package dispatchershell;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,10 +19,6 @@ public class Dispatcher implements IDispatcher{
 
 	public Dispatcher(String filePath)
 	{
-		this.realTimeQueue = new RealTimeQueue();
-		this.userJob = new UserJob();
-		this.waitingProcesses = new LinkedList<IProcess>();
-		this.filePath = filePath;
 		this.currentTime = 0;
 		this.colors = new Color[]{
 			Color.BLUE, Color.CYAN, 
@@ -73,7 +70,7 @@ public class Dispatcher implements IDispatcher{
 	@Override
 	public void start() 
 	{
-		while(true)
+		while(!this.waitingProcesses.isEmpty())
 		{
 			this.currentTime = Timer.getCurrentTime();
 			for (int i = 0; i < this.waitingProcesses.size(); i++)
@@ -89,19 +86,25 @@ public class Dispatcher implements IDispatcher{
 					else 
 					{
 						this.userJob.distribute(process);
+						
 					}
+
+					this.waitingProcesses.remove(process);
 				}
 				
-				
-				this.userJob.run();
-				Timer.tick();
+				if (this.userJob.hasProcess())
+				{
+					this.userJob.run();					
+				}
 			}
 			
 			this.currentTime = Timer.getCurrentTime();
 		}
-		
-		while(useJob.is)
-			
+	
+		while(this.userJob.hasProcess()) 
+		{
+			this.userJob.run();
+		}
 	}
 	
 	
