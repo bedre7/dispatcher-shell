@@ -70,7 +70,6 @@ public class Process implements IProcess {
 	public Priority getPriority() {
 		return this.priority;
 	}
-<<<<<<< HEAD
 
 	@Override
 	public void reducePriority() {
@@ -95,6 +94,4 @@ public class Process implements IProcess {
 		}
 	}
 	
-=======
->>>>>>> cfd28ab68e221dc8e6dd9b5e35914c14cff40fbb
 }
