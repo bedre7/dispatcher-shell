@@ -75,10 +75,9 @@ public class Dispatcher implements IDispatcher{
 	{
 		while(!this.waitingProcesses.isEmpty())
 		{
-			this.currentTime = Timer.getCurrentTime();
-			for (IProcess process : this.waitingProcesses)
+//			this.currentTime = Timer.getCurrentTime();
+			for (IProcess process : new LinkedList<IProcess>(this.waitingProcesses))
 			{
-//				IProcess process = this.waitingProcesses.get(i);
 				if (this.processHasArrived(process))
 				{
 					if(process.isRealTime())
