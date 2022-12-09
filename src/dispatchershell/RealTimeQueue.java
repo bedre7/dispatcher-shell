@@ -4,10 +4,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class RealTimeQueue implements IRealTimeQueue {
-	Queue<IProcess> queue;
+	private Queue<IProcess> queue;
+	private int maxExecutionTime;
 	
-	public RealTimeQueue() {
-		queue = new LinkedList<IProcess>();
+	public RealTimeQueue(int maxExecutionTime) {
+		this.maxExecutionTime = maxExecutionTime;
+		this.queue = new LinkedList<IProcess>();
 	}
 	
 	@Override
@@ -28,7 +30,12 @@ public class RealTimeQueue implements IRealTimeQueue {
 	@Override
 	public void run() 
 	{
-		
+		while (!this.queue.isEmpty())
+		{
+			IProcess currentProcess = this.queue.peek();
+			currentProcess.execute(currentProcess.getBurstTime(), this.maxExecutionTime);
+			this.queue.remove(currentProcess);
+		}
 	}
 
 }

@@ -14,15 +14,17 @@ public class Dispatcher implements IDispatcher{
 	private String filePath;
 	private Color[] colors;
 	private List<IProcess> waitingProcesses;
-	private int quantum = 1;
+	private int quantum;
 	private int currentTime;
+	private int maxExecutionTime;
 
-	public Dispatcher(String filePath, int quantum)
+	public Dispatcher(String filePath, int quantum, int maxExecutionTime)
 	{
 		this.currentTime = 0;
+		this.maxExecutionTime = maxExecutionTime;
 		this.quantum = quantum;
-		this.realTimeQueue = new RealTimeQueue();
-		this.userJob = new UserJob();
+		this.realTimeQueue = new RealTimeQueue(maxExecutionTime);
+		this.userJob = new UserJob(quantum, maxExecutionTime);
 		this.waitingProcesses = new LinkedList<IProcess>();
 		this.colors = new Color[]{
 			Color.BLUE, Color.CYAN, 
@@ -32,10 +34,10 @@ public class Dispatcher implements IDispatcher{
 		};
 	}
 	
-	public static IDispatcher getInstance(String filePath)
+	public static IDispatcher getInstance(String filePath, int quantum, int maxExecutionTime)
 	{
 		if (instance == null) {
-			return new Dispatcher(filePath);
+			return new Dispatcher(filePath, quantum, maxExecutionTime);
 		}
 		return instance;
 	}
@@ -108,7 +110,6 @@ public class Dispatcher implements IDispatcher{
 			this.userJob.run();
 		}
 	}
-	
 	
 	@Override
 	public Color getRandomColor()
