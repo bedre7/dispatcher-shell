@@ -47,6 +47,8 @@ public class UserJob implements IUserJob{
 						processQueue[i].add(currentProcess);  //Last queue
 					}
 				}
+				//We'll write a message to indicate process state
+				//Here: "Process Terminated" 
 				
 				return;
 			}	
