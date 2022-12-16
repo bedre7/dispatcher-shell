@@ -85,13 +85,15 @@ public class Dispatcher implements IDispatcher{
 					{
 						this.realTimeQueue.add(process);
 						this.realTimeQueue.run();
+						//this.waitingProcesses.remove(process);
+						//continue;
 					}
 					else 
 					{
 						this.userJob.distribute(process);
+						this.waitingProcesses.remove(process);
 					}
-
-					this.waitingProcesses.remove(process);
+					
 				}
 				
 				if (this.userJob.hasProcess())
