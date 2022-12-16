@@ -15,18 +15,19 @@ public class Process implements IProcess {
 		this.burstTime = burstTime;
 		this.color = color;
 		this.elapsedTime = 0;
-		this.setState(State.NEW);
+		this.state = State.NEW;
 	}
 	
 	@Override
 	public State execute(int quantum, int maxExecutionTime) {
-		while (quantum >= 0 && !this.isOver()) {
+		while (quantum > 0 && !this.isOver()) {
 			if(this.hasExceededTimeLimit(maxExecutionTime))
 			{
 				this.setState(State.TERMINATED);
 				return this.getState();
 			}
 						
+			Console.log(Timer.getCurrentTime() + " Running process");
 			Timer.tick();
 			this.setState(State.RUNNING);
 			this.elapsedTime++;
@@ -36,10 +37,12 @@ public class Process implements IProcess {
 		this.setState(State.WAITING);
 		return this.getState();
 	}
+	
 	@Override
 	public boolean hasExceededTimeLimit(int limit) {
 		return this.getElapsedTime() >= limit;
 	}
+	
 	@Override
 	public boolean isOver() {
 		return this.getBurstTime() == this.getElapsedTime();
@@ -122,6 +125,4 @@ public class Process implements IProcess {
 		
 		}
 	}
-
-	
 }
