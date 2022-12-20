@@ -2,9 +2,9 @@ package dispatchershell;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Dispatcher implements IDispatcher{
@@ -13,7 +13,7 @@ public class Dispatcher implements IDispatcher{
 	private IUserJob userJob;
 	private String filePath;
 	private Color[] colors;
-	private List<IProcess> waitingProcesses;
+	private PriorityQueue<IProcess> waitingProcesses;
 	private int quantum;
 	private int maxExecutionTime;
 
@@ -24,7 +24,7 @@ public class Dispatcher implements IDispatcher{
 		this.filePath = filePath;
 		this.realTimeQueue = new RealTimeQueue(this.maxExecutionTime);
 		this.userJob = new UserJob(this.quantum, this.maxExecutionTime);
-		this.waitingProcesses = new LinkedList<IProcess>();
+		this.waitingProcesses = new PriorityQueue<IProcess>(new ProcessComparator());
 		this.colors = new Color[]{
 			Color.BLUE, Color.CYAN, 
 			Color.GREEN, Color.PURPLE, 
@@ -88,7 +88,7 @@ public class Dispatcher implements IDispatcher{
 						//this.waitingProcesses.remove(process);
 						//continue;
 					}
-					else 
+					else
 					{
 						this.userJob.distribute(process);
 						this.waitingProcesses.remove(process);
