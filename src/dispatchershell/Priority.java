@@ -5,6 +5,4 @@ public enum Priority {
 	HIGHESTPRIORITY, 	   // Priority 1
 	MEDIUMPRIORITY, 	  // Priority 2
 	LOWESTPRIORITY 		 // Priority 3
-	
-	
 }

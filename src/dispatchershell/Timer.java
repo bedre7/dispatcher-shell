@@ -1,7 +1,7 @@
 package dispatchershell;
 
 public class Timer {
-	private static final int ONESECOND = 1000;
+	private static final int ONESECOND = 0;
 	private static int currentTime = 0;
 	
 	public static void tick()
@@ -11,6 +11,7 @@ public class Timer {
         {
             Thread.sleep(ONESECOND);
             currentTime++;
+            Dispatcher.checkPendingProcesses();
         }
         catch(InterruptedException e)
         {

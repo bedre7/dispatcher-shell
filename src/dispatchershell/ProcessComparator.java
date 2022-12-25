@@ -8,17 +8,24 @@ public class ProcessComparator implements Comparator<IProcess>{
 	public int compare(IProcess a, IProcess b) {
 		int priorityLeft = a.getPriority().ordinal();
 		int priorityRight = b.getPriority().ordinal();
+		int arrivalTimeLeft = a.getArrivalTime();
+		int arrivalTimeRight = b.getArrivalTime();
+		
 		final int LEFT = -1, RIGHT = 1, NONE = 0;
 
-		if (a.getArrivalTime() == b.getArrivalTime())
+		if (priorityLeft == priorityRight)
 		{
-			if (priorityLeft < priorityRight)
+			if (arrivalTimeLeft < arrivalTimeRight)
 				return LEFT;
-			else if (priorityLeft > priorityRight)
+			else if (arrivalTimeLeft > arrivalTimeRight)
 				return RIGHT;
-			return NONE;
+			else {
+//				Console.log("left: " + a.getBurstTime() + " right: " + b.getBurstTime());
+				return NONE;
+			}
+			
 		}
-		else if (a.getArrivalTime() < b.getArrivalTime())
+		else if (priorityLeft < priorityRight)
 			return LEFT;
 		return RIGHT;
 	}

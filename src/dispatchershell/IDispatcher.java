@@ -5,4 +5,6 @@ public interface IDispatcher {
     Color getRandomColor();
     void start();
     boolean processHasArrived(IProcess process);
+    IProcess getCurrentProcess();
+    void interrupt(IProcess process);
 }

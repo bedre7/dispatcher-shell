@@ -18,6 +18,6 @@ public enum Color {
     }
 	
     public String getColor(){
-        return colorCode;
+        return this.colorCode;
     }
 }

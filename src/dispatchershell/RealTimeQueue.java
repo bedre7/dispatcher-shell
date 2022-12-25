@@ -14,17 +14,17 @@ public class RealTimeQueue implements IRealTimeQueue {
 	
 	@Override
 	public void add(IProcess process) {
-		queue.add(process);
+		this.queue.add(process);
 	}
 
 	@Override
-	public IProcess remove() {
-		return queue.remove();
+	public void remove(IProcess process) {
+		this.queue.remove(process);
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return queue.isEmpty();
+		return this.queue.isEmpty();
 	}
 	
 	@Override

@@ -2,29 +2,32 @@ package dispatchershell;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Stack;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Dispatcher implements IDispatcher{
 	private static IDispatcher instance;
-	private IRealTimeQueue realTimeQueue;
-	private IUserJob userJob;
+	private static IRealTimeQueue realTimeQueue;
+	private static IUserJob userJob;
 	private String filePath;
 	private Color[] colors;
-	private PriorityQueue<IProcess> waitingProcesses;
+	private Stack<IProcess> processStack;
+	private static List<IProcess> pendingProcesses;
 	private int quantum;
-	private int maxExecutionTime;
+	private static int maxExecutionTime;
 
-	public Dispatcher(String filePath, int quantum, int maxExecutionTime)
+	public Dispatcher(String filePath, int quantum, int _maxExecutionTime)
 	{
-		this.maxExecutionTime = maxExecutionTime;
+		maxExecutionTime = _maxExecutionTime;
 		this.quantum = quantum;
 		this.filePath = filePath;
-		this.realTimeQueue = new RealTimeQueue(this.maxExecutionTime);
-		this.userJob = new UserJob(this.quantum, this.maxExecutionTime);
-		this.waitingProcesses = new PriorityQueue<IProcess>(new ProcessComparator());
+		realTimeQueue = new RealTimeQueue(maxExecutionTime);
+		userJob = new UserJob(this.quantum, maxExecutionTime);
+		this.processStack = new Stack<IProcess>();
+		pendingProcesses = new ArrayList<IProcess>();
 		this.colors = new Color[]{
 			Color.BLUE, Color.CYAN, 
 			Color.GREEN, Color.PURPLE, 
@@ -44,30 +47,41 @@ public class Dispatcher implements IDispatcher{
 	@Override
 	public IDispatcher readFile() 
 	{
-		final String separator = ",";
+		PriorityQueue<IProcess> priorityQueue = new PriorityQueue<IProcess>(
+					new ProcessComparator()
+				);
 		
 		try(BufferedReader br = new BufferedReader(new FileReader(this.filePath))) {
 			
 			String line;
 			
+			int Id = 0;
 			while ((line = br.readLine()) != null)
 			{
-				String[] param = line.split(separator);
+				String[] param = line.split(",");
 				
 				int arrivalTime = Integer.parseInt(param[0].trim());
 				Priority priority = this.convertToPriority(Integer.parseInt(param[1].trim()));
 				int burstTime = Integer.parseInt(param[2].trim());
 				
 				IProcess newProcess = new Process(
-						arrivalTime, priority, burstTime, this.getRandomColor()
+						Id++, arrivalTime, priority, burstTime, this.getRandomColor()
 						);
 				
-				this.waitingProcesses.add(newProcess);
+				priorityQueue.add(newProcess);
 			}
 		}
 		catch(IOException e) {
 			e.printStackTrace();
 		}
+		
+		Stack<IProcess> tempStack = new Stack<IProcess>();
+		
+		while(!priorityQueue.isEmpty())
+			tempStack.push(priorityQueue.poll());
+		
+		while(!tempStack.isEmpty())
+			this.processStack.push(tempStack.pop());
 		
 		return this;
 	}
@@ -75,43 +89,55 @@ public class Dispatcher implements IDispatcher{
 	@Override
 	public void start() 
 	{
-		while(!this.waitingProcesses.isEmpty())
+		IProcess lastProcess = null;
+		
+		while(!this.processStack.isEmpty())
 		{
-			for (IProcess process : new LinkedList<IProcess>(this.waitingProcesses))
+			IProcess currentProcess = this.getCurrentProcess();
+			if (currentProcess != null)
 			{
-				if (this.processHasArrived(process))
+				if (currentProcess.hasHigherPriority(lastProcess))
 				{
-					if(process.isRealTime())
+					if (lastProcess != null)
 					{
-						this.realTimeQueue.add(process);
-						this.realTimeQueue.run();
-						//this.waitingProcesses.remove(process);
-						//continue;
+						this.interrupt(lastProcess);
+						pendingProcesses.add(lastProcess);
+						lastProcess = null;
 					}
-					else
-					{
-						this.userJob.distribute(process);
-						this.waitingProcesses.remove(process);
-					}
-					
 				}
-				
-				if (this.userJob.hasProcess())
+					
+				if(currentProcess.isRealTime())
 				{
-					this.userJob.run();			
+					realTimeQueue.add(currentProcess);
+					realTimeQueue.run();
+					continue;
+				}
+				else
+				{
+					userJob.distribute(currentProcess);
 				}
 			}
-			
-			Timer.tick();
+				
+			if (userJob.hasProcess())
+			{
+				lastProcess = userJob.run();
+			}
+			else
+				Timer.tick();
 		}
-	
-		while(this.userJob.hasProcess()) 
+		
+		while(userJob.hasProcess()) 
 		{
-			this.userJob.run();
+			userJob.run();
 		}
 		
 	}
-	
+	@Override
+	public void interrupt(IProcess process) {
+		//When a process is interrupted its state is set to "ready"
+		process.setState(State.READY);	
+		Console.printProcessState(process, "is interrupted");
+	}
 	@Override
 	public Color getRandomColor()
 	{
@@ -137,10 +163,54 @@ public class Dispatcher implements IDispatcher{
 		
 		if (Timer.getCurrentTime() >= process.getArrivalTime()) {
 			process.setState(State.READY);
-			
 			return true;
 		}
 		
 		return false;
+	}
+	@Override
+	public IProcess getCurrentProcess()
+	{
+		IProcess currentProcess = null;
+		Stack<IProcess> stack = new Stack<IProcess>();
+		
+		while(!this.processStack.isEmpty())
+		{
+			currentProcess = this.processStack.pop();
+			
+			if (this.processHasArrived(currentProcess))
+			{
+				while(!stack.isEmpty())
+					this.processStack.add(stack.pop());
+				
+				break;
+			}
+			else
+				stack.push(currentProcess);
+		}
+		
+		return currentProcess;
+	}
+	
+	public static void checkPendingProcesses()
+	{
+		for (IProcess process : new ArrayList<IProcess>(pendingProcesses))
+		{
+			if (Dispatcher.shouldBeTerminated(process))
+			{
+				if(process.isRealTime())
+					realTimeQueue.remove(process);
+				else 
+					userJob.remove(process);
+				
+				pendingProcesses.remove(process);
+				Console.printProcessState(process, "exceeded limit");
+			}
+		}
+	}
+
+	public static boolean shouldBeTerminated(IProcess process)
+	{
+		return process.getWaitingTime() >= maxExecutionTime;
 	}
 }

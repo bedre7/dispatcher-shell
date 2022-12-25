@@ -27,20 +27,21 @@ public class UserJob implements IUserJob{
 	}
 
 	@Override
-	public void run() {
+	public IProcess run() {
+		IProcess currentProcess = null;
 		
-		for(int i = 0; i < SIZE-1; i++)
+		for(int i = 0; i < SIZE; i++)
 		{
 			if(!processQueue[i].isEmpty()) {
-				IProcess currentProcess = this.processQueue[i].peek();
+				currentProcess = this.processQueue[i].poll();
 				
-				this.processQueue[i].remove(currentProcess);
-				State state=currentProcess.execute(this.quantum,this.maxExecutionTime);
-				if(state!=State.TERMINATED) {
+				State state = currentProcess.execute(this.quantum,this.maxExecutionTime);
+				
+				if(state != State.TERMINATED) {
 					
 					if(i + 1 < SIZE) {
 						currentProcess.reducePriority();
-						this.processQueue[i+1].add(currentProcess);
+						this.processQueue[i + 1].add(currentProcess);
 					}
 					else
 					{
@@ -49,19 +50,27 @@ public class UserJob implements IUserJob{
 				}
 				//We'll write a message to indicate process state
 				//Here: "Process Terminated" 
-				
-				return;
+				return currentProcess;
 			}	
 		}
+		
+		return currentProcess;
 	}
 	
 	@Override	
 	public boolean hasProcess() {	
 		
-		for(int priority = 0; priority < SIZE-1; priority++)
+		for(int priority = 0; priority < SIZE; priority++)
 			if(!processQueue[priority].isEmpty()) return true;
 	
 		return false;
+	}
+	
+	@Override
+	public void remove(IProcess process) {
+		int priorityValue = process.getPriority().ordinal();
+		int level = priorityValue - 1;
+		this.processQueue[level].remove(process);
 	}
 	
 	@Override

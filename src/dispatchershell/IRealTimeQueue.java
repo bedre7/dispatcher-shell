@@ -2,7 +2,7 @@ package dispatchershell;
 
 public interface IRealTimeQueue {
 	void add(IProcess process);
-    IProcess remove();
+    void remove(IProcess process);
     boolean isEmpty();
 	void run();
 }

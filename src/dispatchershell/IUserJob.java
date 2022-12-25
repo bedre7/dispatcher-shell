@@ -1,7 +1,8 @@
 package dispatchershell;
 
 public interface IUserJob{
-	void run();
+	IProcess run();
 	void distribute(IProcess process);
 	public boolean hasProcess();	
+	void remove(IProcess process);
 }
