@@ -1,5 +1,6 @@
 package dispatchershell;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -27,7 +28,7 @@ public class UserJob implements IUserJob{
 	}
 
 	@Override
-	public IProcess run() {
+	public IProcess run() throws IOException, InterruptedException {
 		IProcess currentProcess = null;
 		
 		for(int i = 0; i < SIZE; i++)

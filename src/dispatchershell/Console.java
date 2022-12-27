@@ -12,6 +12,7 @@ public class Console {
 	public static void printProcessState(IProcess process, String state)
 	{
 		System.out.print(process.getColor().colorCode);
+		
 		System.out.println(Timer.getCurrentTime() + ".0000 sec\tprocess "
 			+ state + "\t(id : " + String.format("%04d",process.getId()) + " priority : " + 
 			process.getPriority().ordinal() + " remaining time: " + 

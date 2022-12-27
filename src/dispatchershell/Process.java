@@ -1,5 +1,7 @@
 package dispatchershell;
 
+import java.io.IOException;
+
 public class Process implements IProcess {
 	private int Id;
 	private int arrivalTime;
@@ -9,6 +11,7 @@ public class Process implements IProcess {
 	private Color color; 
 	private Priority priority;
 	private State state;
+	private ProcessBuilder processBuilder;
 	
 	public Process(int Id, int arrivalTime, Priority priority, int burstTime, Color color) {
 		this.Id = Id;
@@ -18,10 +21,15 @@ public class Process implements IProcess {
 		this.color = color;
 		this.elapsedTime = 0;
 		this.state = State.NEW;
+		this.processBuilder = new ProcessBuilder(
+				"echo", ""
+				).inheritIO();
 	}
 	
 	@Override
-	public State execute(int quantum, int maxExecutionTime) {
+	public State execute(int quantum, int maxExecutionTime) throws IOException, InterruptedException {
+//		this.processBuilder.start();
+		
 		while (quantum > 0 && !this.isOver()) 
 		{
 			if(this.hasExceededTimeLimit(maxExecutionTime))
@@ -116,23 +124,13 @@ public class Process implements IProcess {
 	@Override
 	public void reducePriority() {
 		
-		switch(this.getPriority()) {
-		
-		case HIGHESTPRIORITY:{
-			this.setPriority(Priority.MEDIUMPRIORITY);
-			break;
-		}
-		case MEDIUMPRIORITY:{
-			this.setPriority(Priority.LOWESTPRIORITY);
-			break;
-		}
-		case LOWESTPRIORITY:{
-			//Do nothing
-			break;
-		}
-		default:
-			break;
-		
+		switch(this.getPriority()) 
+		{
+			case HIGHESTPRIORITY:	this.setPriority(Priority.MEDIUMPRIORITY); 	break;
+			case MEDIUMPRIORITY:	this.setPriority(Priority.LOWESTPRIORITY); 	break;
+			case LOWESTPRIORITY:	break;
+			default:
+				break;
 		}
 	}
 }

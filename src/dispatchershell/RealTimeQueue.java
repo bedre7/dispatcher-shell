@@ -1,5 +1,6 @@
 package dispatchershell;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -28,7 +29,7 @@ public class RealTimeQueue implements IRealTimeQueue {
 	}
 	
 	@Override
-	public void run() 
+	public void run() throws IOException, InterruptedException 
 	{
 		while (!this.queue.isEmpty())
 		{

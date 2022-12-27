@@ -72,6 +72,8 @@ public class Dispatcher implements IDispatcher{
 			}
 		}
 		catch(IOException e) {
+			System.out.println("\nDosya bulunamadi, lutfen verdiginiz dosyanin yolunu kontrol ediniz\n"
+					+ "Not: sadece dosyanin ismini girecekseniz dosyanizi projenin ana klasorune koyunuz(JAR'in yaninda)\n");
 			e.printStackTrace();
 		}
 		
@@ -87,7 +89,7 @@ public class Dispatcher implements IDispatcher{
 	}
 	
 	@Override
-	public void start() 
+	public void start() throws IOException, InterruptedException 
 	{
 		IProcess lastProcess = null;
 		
@@ -96,14 +98,11 @@ public class Dispatcher implements IDispatcher{
 			IProcess currentProcess = this.getCurrentProcess();
 			if (currentProcess != null)
 			{
-				if (currentProcess.hasHigherPriority(lastProcess))
+				if (lastProcess != null && currentProcess.hasHigherPriority(lastProcess))
 				{
-					if (lastProcess != null)
-					{
-						this.interrupt(lastProcess);
-						pendingProcesses.add(lastProcess);
-						lastProcess = null;
-					}
+					this.interrupt(lastProcess);
+					pendingProcesses.add(lastProcess);
+					lastProcess = null;
 				}
 					
 				if(currentProcess.isRealTime())
@@ -211,6 +210,6 @@ public class Dispatcher implements IDispatcher{
 
 	public static boolean shouldBeTerminated(IProcess process)
 	{
-		return process.getWaitingTime() >= maxExecutionTime;
+		return !process.isOver() && process.getWaitingTime() >= maxExecutionTime;
 	}
 }
