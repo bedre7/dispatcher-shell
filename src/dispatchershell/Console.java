@@ -2,6 +2,7 @@ package dispatchershell;
 
 import java.awt.SystemColor;
 
+//shellin mesaj yazdirma sinifi
 public class Console {
 	
 	public static void log(String text)
@@ -9,6 +10,7 @@ public class Console {
 		System.out.println(text);
 	}
 	
+	//Prosesin bilgilerini yazmaya yarayan fonksiyon
 	public static void printProcessState(IProcess process, String state)
 	{
 		System.out.print(process.getColor().colorCode);
