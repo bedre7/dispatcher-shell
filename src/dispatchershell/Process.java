@@ -25,7 +25,7 @@ public class Process implements IProcess {
 				"echo", ""
 				).inheritIO();
 	}
-	
+	//prosesi verilen quantuma gore calistiran ve zamanlayiciyi saydiran fonksiyon
 	@Override
 	public State execute(int quantum, int maxExecutionTime) throws IOException, InterruptedException {
 //		this.processBuilder.start();
@@ -41,45 +41,47 @@ public class Process implements IProcess {
 			}
 
 			Console.printProcessState(this, "is running");
+			//prosesin calistigi her dongu cevrime kadar zamanlayici artirilir
 			Timer.tick();
 			this.setState(State.RUNNING);
 			this.elapsedTime++;
 			quantum--;
 		}
-		
+		//proses bekletilir
 		this.setState(State.WAITING);
 		
+		//proses bitmisse mesaj yazdirilir
 		if(this.isOver()) {
 			Console.printProcessState(this, "has ended");
 			this.setState(State.TERMINATED);
 		}
-		
+		//son calisma zamani guncellenir
 		this.lastExecutionTime = Timer.getCurrentTime();
 		
 		return this.getState();
 	}
-	
+	//iki proseslerin oncelik seviyelerini karsilasitiran fonksiyon
 	@Override
 	public boolean hasHigherPriority(IProcess other) {
 		if (other == null) return true;
 		return this.getPriority().ordinal() < other.getPriority().ordinal();
 	}
-	
+	//prosesin calisma zamani kontrol eden fonksiyon
 	@Override
 	public boolean hasExceededTimeLimit(int limit) {
 		return this.getElapsedTime() >= limit;
 	}
-	
+	//bekleme zamani bulan fonksiyon
 	@Override
 	public int getWaitingTime() {
 		return Timer.getCurrentTime() - this.lastExecutionTime;
 	}
-	
+	//proses bitip bitmedigini kontrol eden fonksiyon
 	@Override
 	public boolean isOver() {
 		return this.getBurstTime() == this.getElapsedTime();
 	}
-	
+	//proses gercek zamanli olup olmadigini kontrol eden fonksiyon
 	@Override
 	public boolean isRealTime() {
 		return this.priority == Priority.REALTIME;
@@ -120,7 +122,7 @@ public class Process implements IProcess {
 	public Priority getPriority() {
 		return this.priority;
 	}
-
+	//prosesin onceligi dusuren fonksiyon
 	@Override
 	public void reducePriority() {
 		

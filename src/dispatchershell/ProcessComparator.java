@@ -2,6 +2,9 @@ package dispatchershell;
 
 import java.util.Comparator;
 
+//proseslerini onceliklerine gore siralamaya yarayan karsilasitirici fonksiyon
+//Note: once proseslerin oncelikleri bakilmaktadir
+//		oncelikleri ayni ise varis zamanlarina gore siralanmaktadir
 public class ProcessComparator implements Comparator<IProcess>{
 
 	@Override
