@@ -9,7 +9,7 @@ public class Console {
 	{
 		System.out.println(text);
 	}
-	//Prosesin bilgilerini yazmaya yarayan fonksiyon
+	
 	public static void printProcessState(IProcess process, String state)
 	{
 		System.out.print(process.getColor().colorCode);

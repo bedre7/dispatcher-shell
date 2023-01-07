@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-//Geri beslemeli kuyuruklari yonten Userjob sinifi
+//Geri beslemeli kuyruklari yoneten Userjob sinifi
 public class UserJob implements IUserJob{
 	
 	private final int SIZE=3;
@@ -22,8 +22,8 @@ public class UserJob implements IUserJob{
 		this.maxExecutionTime=maxExecutionTime;
 		
 		processQueue=new LinkedList[SIZE];
-		
-		//prosesleri geri beslemeli kuyuruklar(sirasiyla) 
+				
+		//proseslerin geri beslemeli kuyruklari(sirasiyla)
 		processQueue[HIGHESTPRIORITY]=new LinkedList<IProcess>();
 		processQueue[MEDIUMPRIORITY]=new LinkedList<IProcess>();
 		processQueue[LOWESTPRIORITY]=new LinkedList<IProcess>();
@@ -35,17 +35,18 @@ public class UserJob implements IUserJob{
 		
 		for(int i = 0; i < SIZE; i++)
 		{
-			//en oncelikli kuyurktan baslanarak verilen kuantuma kadar proses calisitirlir
+			//en oncelikli kuyruktan baslanarak verilen kuantuma kadar proses calistirilir
 			if(!processQueue[i].isEmpty()) {
 				//siradaki proses kuyurktan cekilir
 				currentProcess = this.processQueue[i].poll();
 				
-				//proses calistirlir
+				//proses calistirilir
 				State state = currentProcess.execute(this.quantum,this.maxExecutionTime);
 				
 				if(state != State.TERMINATED) {
 					//calistiktan sonra bir sonraki kuyuruga atanir(mumkunse) 
 					
+					//calistiktan sonra bir sonraki kuyruga atanir(eger mumkunse)
 					if(i + 1 < SIZE) {
 						currentProcess.reducePriority();
 						this.processQueue[i + 1].add(currentProcess);
@@ -64,7 +65,7 @@ public class UserJob implements IUserJob{
 		return currentProcess;
 	}
 	
-	//userjob'in her hangi kuyrugunda proses olup olmadigini kontrol eden fonksiyon
+	//userjob'in herhangi kuyrugunda proses olup olmadigini kontrol eden fonksiyon
 	@Override	
 	public boolean hasProcess() {	
 		
@@ -73,14 +74,16 @@ public class UserJob implements IUserJob{
 	
 		return false;
 	}
-	//verilen prosesi ilgili kuyuruktan cikartan fonksiyon
+	
+	//verilen prosesi ilgili kuyruktan cikartan fonksiyon
 	@Override
 	public void remove(IProcess process) {
 		int priorityValue = process.getPriority().ordinal();
 		int level = priorityValue - 1;
 		this.processQueue[level].remove(process);
 	}
-	//gelen prosesin onceligine gore uygun kuyuruga atan fonksiyon
+	
+	//gelen prosesin onceligine gore uygun kuyruga atanan fonksiyon
 	@Override
 	public void distribute(IProcess process) {
 		
