@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
+//Gercek zamanli proses kuyurugu yoneten sinif
 public class RealTimeQueue implements IRealTimeQueue {
 	private Queue<IProcess> queue;
 	private int maxExecutionTime;
@@ -27,7 +28,7 @@ public class RealTimeQueue implements IRealTimeQueue {
 	public boolean isEmpty() {
 		return this.queue.isEmpty();
 	}
-	
+	//prosesleri FCFS algoritmasina gore calisitiran fonksiyon
 	@Override
 	public void run() throws IOException, InterruptedException 
 	{

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
+//Geri beslemeli kuyuruklari yonten Userjob sinifi
 public class UserJob implements IUserJob{
 	
 	private final int SIZE=3;
@@ -21,24 +22,29 @@ public class UserJob implements IUserJob{
 		this.maxExecutionTime=maxExecutionTime;
 		
 		processQueue=new LinkedList[SIZE];
-				
+		
+		//prosesleri geri beslemeli kuyuruklar(sirasiyla) 
 		processQueue[HIGHESTPRIORITY]=new LinkedList<IProcess>();
 		processQueue[MEDIUMPRIORITY]=new LinkedList<IProcess>();
 		processQueue[LOWESTPRIORITY]=new LinkedList<IProcess>();
 	}
-
+	
 	@Override
 	public IProcess run() throws IOException, InterruptedException {
 		IProcess currentProcess = null;
 		
 		for(int i = 0; i < SIZE; i++)
 		{
+			//en oncelikli kuyurktan baslanarak verilen kuantuma kadar proses calisitirlir
 			if(!processQueue[i].isEmpty()) {
+				//siradaki proses kuyurktan cekilir
 				currentProcess = this.processQueue[i].poll();
 				
+				//proses calistirlir
 				State state = currentProcess.execute(this.quantum,this.maxExecutionTime);
 				
 				if(state != State.TERMINATED) {
+					//calistiktan sonra bir sonraki kuyuruga atanir(mumkunse) 
 					
 					if(i + 1 < SIZE) {
 						currentProcess.reducePriority();
@@ -58,6 +64,7 @@ public class UserJob implements IUserJob{
 		return currentProcess;
 	}
 	
+	//userjob'in her hangi kuyrugunda proses olup olmadigini kontrol eden fonksiyon
 	@Override	
 	public boolean hasProcess() {	
 		
@@ -66,14 +73,14 @@ public class UserJob implements IUserJob{
 	
 		return false;
 	}
-	
+	//verilen prosesi ilgili kuyuruktan cikartan fonksiyon
 	@Override
 	public void remove(IProcess process) {
 		int priorityValue = process.getPriority().ordinal();
 		int level = priorityValue - 1;
 		this.processQueue[level].remove(process);
 	}
-	
+	//gelen prosesin onceligine gore uygun kuyuruga atan fonksiyon
 	@Override
 	public void distribute(IProcess process) {
 		

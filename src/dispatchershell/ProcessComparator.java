@@ -2,6 +2,9 @@ package dispatchershell;
 
 import java.util.Comparator;
 
+//proseslerini onceliklerine gore siralamaya yarayan karsilasitirici fonksiyon
+//Note: once proseslerin oncelikleri bakilmaktadir
+//		oncelikleri ayni ise varis zamanlarina gore siralanmaktadir
 public class ProcessComparator implements Comparator<IProcess>{
 
 	@Override
@@ -20,10 +23,8 @@ public class ProcessComparator implements Comparator<IProcess>{
 			else if (arrivalTimeLeft > arrivalTimeRight)
 				return RIGHT;
 			else {
-//				Console.log("left: " + a.getBurstTime() + " right: " + b.getBurstTime());
 				return NONE;
 			}
-			
 		}
 		else if (priorityLeft < priorityRight)
 			return LEFT;
