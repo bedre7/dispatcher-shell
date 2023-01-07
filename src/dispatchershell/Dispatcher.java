@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Stack;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Dispatcher implements IDispatcher{
@@ -14,21 +13,22 @@ public class Dispatcher implements IDispatcher{
 	private static IUserJob userJob;
 	private String filePath;
 	private Color[] colors;
-	private Stack<IProcess> processStack;
+	private List<IProcess> allProcesses;
 	private static List<IProcess> pendingProcesses;
 	private int quantum;
-	private static int maxExecutionTime;
+	private static int maxWaitingTime;
 
-	public Dispatcher(String filePath, int quantum, int _maxExecutionTime)
+	public Dispatcher(String filePath, int quantum, int _maxWaitingTime)
 	{
-		maxExecutionTime = _maxExecutionTime;
 		this.quantum = quantum;
 		this.filePath = filePath;
-		realTimeQueue = new RealTimeQueue(maxExecutionTime);
-		userJob = new UserJob(this.quantum, maxExecutionTime);
-		this.processStack = new Stack<IProcess>();
+		maxWaitingTime = _maxWaitingTime;
+		realTimeQueue = new RealTimeQueue();
+		userJob = new UserJob(this.quantum);
 		pendingProcesses = new ArrayList<IProcess>();
-		this.colors = new Color[]{
+		this.allProcesses = new ArrayList<>();
+		this.colors = new Color[]
+		{
 			Color.BLUE, Color.CYAN, 
 			Color.GREEN, Color.PURPLE, 
 			Color.RED, Color.WHITE, 
@@ -36,10 +36,11 @@ public class Dispatcher implements IDispatcher{
 		};
 	}
 	
-	public static IDispatcher getInstance(String filePath, int quantum, int maxExecutionTime)
+	//Singleton pattern kullanilarak nesne olusturuluyor
+	public static IDispatcher getInstance(String filePath, int quantum, int maxWaitingTime)
 	{
 		if (instance == null) {
-			return new Dispatcher(filePath, quantum, maxExecutionTime);
+			return new Dispatcher(filePath, quantum, maxWaitingTime);
 		}
 		return instance;
 	}
@@ -47,6 +48,8 @@ public class Dispatcher implements IDispatcher{
 	@Override
 	public IDispatcher readFile() 
 	{
+		//proseslerin onceliklerine ve daha sonrasinda gelis zamanlarina gore siralanmistir
+		
 		PriorityQueue<IProcess> priorityQueue = new PriorityQueue<IProcess>(
 					new ProcessComparator()
 				);
@@ -54,7 +57,7 @@ public class Dispatcher implements IDispatcher{
 		try(BufferedReader br = new BufferedReader(new FileReader(this.filePath))) {
 			String line;
 			
-			int Id = 0;
+			int ID = 0;
 			while ((line = br.readLine()) != null)
 			{
 				String[] param = line.split(",");
@@ -63,8 +66,9 @@ public class Dispatcher implements IDispatcher{
 				Priority priority = this.convertToPriority(Integer.parseInt(param[1].trim()));
 				int burstTime = Integer.parseInt(param[2].trim());
 				
+				//Dosyadaki her satir parse edilerek yeni proses olusturuluyor
 				IProcess newProcess = new Process(
-						Id++, arrivalTime, priority, burstTime, this.getRandomColor()
+						ID++, arrivalTime, priority, burstTime, this.getRandomColor()
 						);
 				
 				priorityQueue.add(newProcess);
@@ -76,40 +80,44 @@ public class Dispatcher implements IDispatcher{
 			e.printStackTrace();
 		}
 
-		//prosesler kuyruga eklendikten sonra stack veri yapisina kopyalanir
-		//bunun sebebi de siradaki calistirilmasi gereken prosesi kolayca belirlemek
-		//icin stack en uygun veri yapisidir
-		this.stackProcesses(priorityQueue);
+		/*
+		 * prosesleri kuyruga ekleyerek comparator sinifi araciligiyla oncelige gore
+		 * siraladiktan sonra siradaki prosesi listeden daha kolay bir sekilde
+		 * bulabilmek icin PriorityQueue'den -> ArrayList'e kopyalanir
+		 *
+		 */
 		
-		Stack<IProcess> tempStack = new Stack<IProcess>();
-		
-		while(!priorityQueue.isEmpty())
-			tempStack.push(priorityQueue.poll());
-		
-		while(!tempStack.isEmpty())
-			this.processStack.push(tempStack.pop());
+		while (!priorityQueue.isEmpty())
+		{
+			this.allProcesses.add(priorityQueue.poll());
+		}
 		
 		return this;
 	}
 	
+	//proses kuyuruklarina proses atayan ve calistiran ana fonksiyon
 	@Override
 	public void start() throws IOException, InterruptedException 
 	{
+		//son calistirilan proses
 		IProcess lastProcess = null;
 		
-		while(!this.processStack.isEmpty())
+		while(!this.allProcesses.isEmpty())
 		{
+			//o sirada calistirilmasi gereken proses varsa aranir
 			IProcess currentProcess = this.getCurrentProcess();
 			
 			if (currentProcess != null)
 			{
+				//siradaki proses yuksek oncelikli ise son proses askiya alinir
 				if (lastProcess != null && currentProcess.hasHigherPriority(lastProcess))
 				{
 					this.interrupt(lastProcess);
 					pendingProcesses.add(lastProcess);
 					lastProcess = null;
 				}
-					
+			
+				//siradaki proses gercek zamanli ise kendi kuyruga ataniyor ve hemen calistirilir
 				if(currentProcess.isRealTime())
 				{
 					realTimeQueue.add(currentProcess);
@@ -128,21 +136,26 @@ public class Dispatcher implements IDispatcher{
 				lastProcess = userJob.run();
 			}
 			else
-				Timer.tick();
+				Timer.tick();				//hic bir proses yoksa zamanlayici arttirilir 
 		}
 		
+		//proseslerin hepsi zamani gelmisse ve userjob'in hala bitmeyen
+		//prosesi varsa calistirilir
 		while(userJob.hasProcess()) 
 		{
 			userJob.run();
 		}
 		
 	}
+	
+	//verilen prosesi askiya alan fonksiyon
 	@Override
 	public void interrupt(IProcess process) {
 		//When a process is interrupted its state is set to "ready"
 		process.setState(State.READY);	
 		Console.printProcessState(process, "is interrupted");
 	}
+	
 	@Override
 	public Color getRandomColor()
 	{
@@ -152,6 +165,7 @@ public class Dispatcher implements IDispatcher{
 		return this.colors[randomIndex];
 	}
 	
+	//verilen sayiya gore oncelik bulan fonksiyon
 	private Priority convertToPriority(int priorityValue)
 	{
 		return switch(priorityValue) {
@@ -163,6 +177,7 @@ public class Dispatcher implements IDispatcher{
 		};
 	}
 
+	//verilen prosesin varip varmadigini sorgulayan fonksiyon
 	@Override
 	public boolean processHasArrived(IProcess process) {
 		if (Timer.getCurrentTime() >= process.getArrivalTime()) {
@@ -172,34 +187,29 @@ public class Dispatcher implements IDispatcher{
 		
 		return false;
 	}
+	//siradaki calistirilmasi gereken en oncelikli prosesi arayip donduren fonksiyon
 	@Override
 	public IProcess getCurrentProcess()
 	{
-		IProcess currentProcess = null;
-		Stack<IProcess> stack = new Stack<IProcess>();
-		
-		while(!this.processStack.isEmpty())
+		for (IProcess currentProcess : new ArrayList<IProcess>(this.allProcesses))
 		{
-			currentProcess = this.processStack.pop();
-			
-			if (this.processHasArrived(currentProcess))
+			if (this.processHasArrived(currentProcess)) 
 			{
-				while(!stack.isEmpty())
-					this.processStack.add(stack.pop());
-				
-				break;
+				//prosesin zamani gelmisse bekleyen proseslerin listesinden cikartirilir
+				this.allProcesses.remove(currentProcess);
+				return currentProcess;
 			}
-			else
-				stack.push(currentProcess);
 		}
 		
-		return currentProcess;
+		return null;
 	}
 	
+	//bekleme zamanlari gecen prosesleri olup olmadigini kontrol eder
 	public static void checkPendingProcesses()
 	{
 		for (IProcess process : new ArrayList<IProcess>(pendingProcesses))
 		{
+			//20 sn bekleme suresi gecmisse proses sonlandirilir
 			if (Dispatcher.shouldBeTerminated(process))
 			{
 				if(process.isRealTime())
@@ -212,9 +222,10 @@ public class Dispatcher implements IDispatcher{
 			}
 		}
 	}
-
+	
+	//prosesin zamani asip asmadigini kontrol eden fonksiyon
 	public static boolean shouldBeTerminated(IProcess process)
 	{
-		return !process.isOver() && process.getWaitingTime() >= maxExecutionTime;
+		return !process.isOver() && process.getWaitingTime() >= maxWaitingTime;
 	}
 }

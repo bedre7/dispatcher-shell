@@ -22,12 +22,12 @@ public class ProcessComparator implements Comparator<IProcess>{
 				return LEFT;
 			else if (arrivalTimeLeft > arrivalTimeRight)
 				return RIGHT;
-			else {
+			else
 				return NONE;
-			}
 		}
 		else if (priorityLeft < priorityRight)
 			return LEFT;
+		
 		return RIGHT;
 	}
 

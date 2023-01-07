@@ -7,26 +7,23 @@ import java.util.Queue;
 //Geri beslemeli kuyruklari yoneten Userjob sinifi
 public class UserJob implements IUserJob{
 	
-	private final int SIZE=3;
 	private Queue<IProcess>[] processQueue;
-	private final int HIGHESTPRIORITY=0;
-	private final int MEDIUMPRIORITY=1;
-	private final int LOWESTPRIORITY=2;
+	private final int HIGHESTPRIORITY = 0;
+	private final int MEDIUMPRIORITY = 1;
+	private final int LOWESTPRIORITY = 2;
+	private final int SIZE = 3;
 	private int quantum;
-	int maxExecutionTime;
 	
 	
-	public UserJob(int quantum, int maxExecutionTime) {
+	public UserJob(int quantum) {
 		
-		this.quantum=quantum;
-		this.maxExecutionTime=maxExecutionTime;
-		
-		processQueue=new LinkedList[SIZE];
+		this.quantum = quantum;
+		processQueue = new LinkedList[SIZE];
 				
 		//proseslerin geri beslemeli kuyruklari(sirasiyla)
-		processQueue[HIGHESTPRIORITY]=new LinkedList<IProcess>();
-		processQueue[MEDIUMPRIORITY]=new LinkedList<IProcess>();
-		processQueue[LOWESTPRIORITY]=new LinkedList<IProcess>();
+		processQueue[HIGHESTPRIORITY] = new LinkedList<IProcess>();
+		processQueue[MEDIUMPRIORITY] = new LinkedList<IProcess>();
+		processQueue[LOWESTPRIORITY] = new LinkedList<IProcess>();
 	}
 	
 	@Override
@@ -41,7 +38,7 @@ public class UserJob implements IUserJob{
 				currentProcess = this.processQueue[i].poll();
 				
 				//proses calistirilir
-				State state = currentProcess.execute(this.quantum,this.maxExecutionTime);
+				State state = currentProcess.execute(this.quantum);
 				
 				if(state != State.TERMINATED) {
 					//calistiktan sonra bir sonraki kuyuruga atanir(mumkunse) 
@@ -56,8 +53,6 @@ public class UserJob implements IUserJob{
 						processQueue[i].add(currentProcess);  //Last queue
 					}
 				}
-				//We'll write a message to indicate process state
-				//Here: "Process Terminated" 
 				return currentProcess;
 			}	
 		}

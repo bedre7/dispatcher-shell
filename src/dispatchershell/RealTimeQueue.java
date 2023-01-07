@@ -7,10 +7,8 @@ import java.util.Queue;
 //Gercek zamanli proses kuyurugu yoneten sinif
 public class RealTimeQueue implements IRealTimeQueue {
 	private Queue<IProcess> queue;
-	private int maxExecutionTime;
 	
-	public RealTimeQueue(int maxExecutionTime) {
-		this.maxExecutionTime = maxExecutionTime;
+	public RealTimeQueue() {
 		this.queue = new LinkedList<IProcess>();
 	}
 	
@@ -35,7 +33,7 @@ public class RealTimeQueue implements IRealTimeQueue {
 		while (!this.queue.isEmpty())
 		{
 			IProcess currentProcess = this.queue.peek();
-			currentProcess.execute(currentProcess.getBurstTime(), this.maxExecutionTime);
+			currentProcess.execute(currentProcess.getBurstTime());
 			this.queue.remove(currentProcess);
 		}
 	}

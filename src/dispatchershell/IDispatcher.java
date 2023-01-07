@@ -10,5 +10,4 @@ public interface IDispatcher {
     boolean processHasArrived(IProcess process);
     IProcess getCurrentProcess();
     void interrupt(IProcess process);
-    void stackProcesses(PriorityQueue<IProcess> priorityQueue);
 }

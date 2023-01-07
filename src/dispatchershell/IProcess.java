@@ -14,9 +14,8 @@ public interface IProcess {
 	void setState(State state);
 	void setPriority(Priority priority) ;
 	void reducePriority();
-	State execute(int quantum, int maxExecutionTime) throws IOException, InterruptedException;
+	State execute(int quantum) throws IOException, InterruptedException;
 	boolean isRealTime();
 	boolean isOver();
-	boolean hasExceededTimeLimit(int limit);
 	boolean hasHigherPriority(IProcess other);
 }

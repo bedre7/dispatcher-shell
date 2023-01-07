@@ -27,19 +27,11 @@ public class Process implements IProcess {
 	}
 	//prosesi verilen quantuma gore calistiran ve zamanlayiciyi saydiran fonksiyon
 	@Override
-	public State execute(int quantum, int maxExecutionTime) throws IOException, InterruptedException {
+	public State execute(int quantum) throws IOException, InterruptedException {
 //		this.processBuilder.start();
 		
 		while (quantum > 0 && !this.isOver()) 
 		{
-			if(this.hasExceededTimeLimit(maxExecutionTime))
-			{
-				Console.printProcessState(this, "exceeded time");
-				this.setState(State.TERMINATED);
-				this.lastExecutionTime = Timer.getCurrentTime();
-				return this.getState();
-			}
-
 			Console.printProcessState(this, "is running");
 			//prosesin calistigi her dongu cevrime kadar zamanlayici artirilir
 			Timer.tick();
@@ -66,11 +58,6 @@ public class Process implements IProcess {
 	public boolean hasHigherPriority(IProcess other) {
 		if (other == null) return true;
 		return this.getPriority().ordinal() < other.getPriority().ordinal();
-	}
-	//prosesin calisma zamani kontrol eden fonksiyon
-	@Override
-	public boolean hasExceededTimeLimit(int limit) {
-		return this.getElapsedTime() >= limit;
 	}
 	//bekleme zamani bulan fonksiyon
 	@Override
