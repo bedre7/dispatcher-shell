@@ -1,6 +1,6 @@
 package dispatchershell;
 
-//proseslerin durumlari temsil eden enum
+//proseslerin durumlarini temsil eden enum
 public enum State {
 	WAITING,
 	RUNNING,

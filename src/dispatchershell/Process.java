@@ -60,17 +60,17 @@ public class Process implements IProcess {
 		if (other == null) return true;
 		return this.getPriority().ordinal() < other.getPriority().ordinal();
 	}
-	//bekleme zamani bulan fonksiyon
+	//bekleme zamanini bulan fonksiyon
 	@Override
 	public int getWaitingTime() {
 		return Timer.getCurrentTime() - this.lastExecutionTime;
 	}
-	//proses bitip bitmedigini kontrol eden fonksiyon
+	//prosesin bitip bitmedigini kontrol eden fonksiyon
 	@Override
 	public boolean isOver() {
 		return this.getBurstTime() == this.getElapsedTime();
 	}
-	//proses gercek zamanli olup olmadigini kontrol eden fonksiyon
+	//prosesin gercek zamanli olup olmadigini kontrol eden fonksiyon
 	@Override
 	public boolean isRealTime() {
 		return this.priority == Priority.REALTIME;
@@ -111,7 +111,7 @@ public class Process implements IProcess {
 	public Priority getPriority() {
 		return this.priority;
 	}
-	//prosesin onceligi dusuren fonksiyon
+	//prosesin onceligini dusuren fonksiyon
 	@Override
 	public void reducePriority() {
 		

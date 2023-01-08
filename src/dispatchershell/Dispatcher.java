@@ -48,7 +48,7 @@ public class Dispatcher implements IDispatcher{
 	@Override
 	public IDispatcher readFile() 
 	{
-		//proseslerin onceliklerine ve daha sonrasinda gelis zamanlarina gore siralanmistir
+		//prosesler onceliklerine ve daha sonrasinda gelis zamanlarina gore siralanmistir
 		
 		PriorityQueue<IProcess> priorityQueue = new PriorityQueue<IProcess>(
 					new ProcessComparator()
