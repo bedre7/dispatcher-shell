@@ -2,7 +2,7 @@
 
 ## 📝 About
 This is a simple shell written in Java. It is a project made in an effort to simulate of how processes are executed in a real operating system.
-## 💡 Walkthrough
+## 🗺️ Walkthrough
 
 The dispatcher shell takes in a text file as an argument. The text file contains a list of processes to be executed(explained below). The shell then reads the file and creates a process for each line in the file.
 It consists of two major process queues:

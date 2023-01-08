@@ -22,13 +22,14 @@ public class Process implements IProcess {
 		this.elapsedTime = 0;
 		this.state = State.NEW;
 		this.processBuilder = new ProcessBuilder(
-				"echo", ""
+				"cmd", "/c", "echo", "\r"
 				).inheritIO();
 	}
 	//prosesi verilen quantuma gore calistiran ve zamanlayiciyi saydiran fonksiyon
 	@Override
 	public State execute(int quantum) throws IOException, InterruptedException {
-//		this.processBuilder.start();
+		
+//		this.processBuilder.start().waitFor();
 		
 		while (quantum > 0 && !this.isOver()) 
 		{
