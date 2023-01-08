@@ -7,7 +7,10 @@ public class Console {
 	public static void log(String text)
 	{
 		try {
-			new ProcessBuilder("cmd", "/c", "echo " + text).inheritIO().start().waitFor();
+			new ProcessBuilder("cmd", "/c", "echo " + text)
+							.inheritIO()
+							.start()
+							.waitFor();
 		} catch (InterruptedException|IOException e) {
 			throw new RuntimeException(e);
 	    }
