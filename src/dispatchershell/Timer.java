@@ -1,6 +1,6 @@
 package dispatchershell;
 
-//Zamani yonetebilmek icin kullanilan Zamanlayici sinifi
+//A class used to control time throughout the execution of this program
 public class Timer {
 	private static final int ONESECOND = 0;
 	private static int currentTime = 0;
@@ -12,7 +12,11 @@ public class Timer {
         {
             Thread.sleep(ONESECOND);
             currentTime++;
-            //her saniyede zamani gecen proses varsa Dagitici kontrol ettirilir
+            /*
+                For every second that passes, the waiting list of processes is checked
+                This is done to terminates any process that has exceeded maximum waiting time
+            */
+
             Dispatcher.checkPendingProcesses();
         }
         catch(InterruptedException e)

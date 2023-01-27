@@ -36,7 +36,7 @@ public class Dispatcher implements IDispatcher{
 		};
 	}
 	
-	//Singleton pattern kullanilarak nesne olusturuluyor
+	//Singleton pattern is being used to create an instance from this class
 	public static IDispatcher getInstance(String filePath, int quantum, int maxWaitingTime)
 	{
 		if (instance == null) {
@@ -48,7 +48,7 @@ public class Dispatcher implements IDispatcher{
 	@Override
 	public IDispatcher readFile() 
 	{
-		//prosesler onceliklerine ve daha sonrasinda gelis zamanlarina gore siralanmistir
+		//Processes are being sorted first by their priority and then by their arrival time
 		
 		PriorityQueue<IProcess> priorityQueue = new PriorityQueue<IProcess>(
 					new ProcessComparator()
@@ -66,7 +66,7 @@ public class Dispatcher implements IDispatcher{
 				Priority priority = this.convertToPriority(Integer.parseInt(param[1].trim()));
 				int burstTime = Integer.parseInt(param[2].trim());
 				
-				//Dosyadaki her satir parse edilerek yeni proses olusturuluyor
+				//Each line in the file is parsed and new process object is created
 				IProcess newProcess = new Process(
 						ID++, arrivalTime, priority, burstTime, this.getRandomColor()
 						);
@@ -75,17 +75,14 @@ public class Dispatcher implements IDispatcher{
 			}
 		}
 		catch(IOException e) {
-			System.out.println("\nDosya bulunamadi, lutfen verdiginiz dosyanin yolunu kontrol ediniz\n"
-					+ "Not: sadece dosyanin ismini girecekseniz dosyanizi projenin ana klasorune koyunuz(JAR'in yaninda)\n");
+			System.out.println("\nFile not found, Please make sure the file path you provided is correct\n"
 			e.printStackTrace();
 		}
 
 		/*
-		 * prosesleri kuyruga ekleyerek comparator sinifi araciligiyla oncelige gore
-		 * siraladiktan sonra siradaki prosesi listeden daha kolay bir sekilde
-		 * bulabilmek icin PriorityQueue'den -> ArrayList'e kopyalanir
-		 *
-		 */
+			After sorting the processes using comparator defined for the priority queue
+		 	they are copied to Arraylist to make it easier to traverse the list
+		*/
 		
 		while (!priorityQueue.isEmpty())
 		{
@@ -95,29 +92,28 @@ public class Dispatcher implements IDispatcher{
 		return this;
 	}
 	
-	//proses kuyuruklarina proses atayan ve calistiran ana fonksiyon
+	//Assigns processes to the queue they belong and runs the appropriate queue if needed
 	@Override
 	public void start() throws IOException, InterruptedException 
 	{
-		//son calistirilan proses
+		//The last process that was being executed
 		IProcess lastProcess = null;
 		
 		while(!this.allProcesses.isEmpty())
 		{
-			//o sirada calistirilmasi gereken proses varsa aranir
+			//The process that needs to be executed at that moment is searched
 			IProcess currentProcess = this.getCurrentProcess();
 			
 			if (currentProcess != null)
 			{
-				//siradaki proses yuksek oncelikli ise son proses askiya alinir
+				//If the current process is of higher priority, the last process is interrupted
 				if (lastProcess != null && currentProcess.hasHigherPriority(lastProcess))
 				{
 					this.interrupt(lastProcess);
-					pendingProcesses.add(lastProcess);
 					lastProcess = null;
 				}
 			
-				//siradaki proses gercek zamanli ise kendi kuyruga ataniyor ve hemen calistirilir
+				//If the current process is real time, it is assigned to its respective queue and run
 				if(currentProcess.isRealTime())
 				{
 					realTimeQueue.add(currentProcess);
@@ -126,7 +122,7 @@ public class Dispatcher implements IDispatcher{
 				}
 				else
 				{
-					//normal proses ise userjob'a atanir
+					//If it is user process, it is assigned to userjob queue
 					userJob.distribute(currentProcess);
 				}
 			}
@@ -136,11 +132,10 @@ public class Dispatcher implements IDispatcher{
 				lastProcess = userJob.run();
 			}
 			else
-				Timer.tick();				//hic bir proses yoksa zamanlayici arttirilir 
+				Timer.tick();				//if there is no queue to be run, the timer is ticked
 		}
 		
-		//proseslerin hepsi zamani gelmisse ve userjob'in hala bitmeyen
-		//prosesi varsa calistirilir
+		//If the User job queue still has process, it is let to execute it's processes
 		while(userJob.hasProcess()) 
 		{
 			userJob.run();
@@ -148,9 +143,10 @@ public class Dispatcher implements IDispatcher{
 		
 	}
 	
-	//verilen prosesi askiya alan fonksiyon
+	//It interrupts the process
 	@Override
 	public void interrupt(IProcess process) {
+		pendingProcesses.add(lastProcess);
 		//When a process is interrupted its state is set to "ready"
 		process.setState(State.READY);	
 		Console.printProcessState(process, "is interrupted");
@@ -165,7 +161,7 @@ public class Dispatcher implements IDispatcher{
 		return this.colors[randomIndex];
 	}
 	
-	//verilen sayiya gore oncelik bulan fonksiyon
+	//Finds out the priority enum value for a integer value passed in
 	private Priority convertToPriority(int priorityValue)
 	{
 		return switch(priorityValue) {
@@ -177,7 +173,7 @@ public class Dispatcher implements IDispatcher{
 		};
 	}
 
-	//verilen prosesin varip varmadigini sorgulayan fonksiyon
+	//Checks whether the process passed in has arrived or not
 	@Override
 	public boolean processHasArrived(IProcess process) {
 		if (Timer.getCurrentTime() >= process.getArrivalTime()) {
@@ -187,7 +183,8 @@ public class Dispatcher implements IDispatcher{
 		
 		return false;
 	}
-	//siradaki calistirilmasi gereken en oncelikli prosesi arayip donduren fonksiyon
+	
+	//Finds out the process with the highest priority that needs to be executed at the moment
 	@Override
 	public IProcess getCurrentProcess()
 	{
@@ -195,7 +192,7 @@ public class Dispatcher implements IDispatcher{
 		{
 			if (this.processHasArrived(currentProcess)) 
 			{
-				//prosesin zamani gelmisse bekleyen proseslerin listesinden cikartirilir
+				//if the process has arrived it is removed from the waiting list and returned
 				this.allProcesses.remove(currentProcess);
 				return currentProcess;
 			}
@@ -204,12 +201,12 @@ public class Dispatcher implements IDispatcher{
 		return null;
 	}
 	
-	//bekleme zamanlari gecen prosesleri olup olmadigini kontrol eder
+	//Checks if there is/are any process(es) which exceeded the maximum waiting time
 	public static void checkPendingProcesses()
 	{
 		for (IProcess process : new ArrayList<IProcess>(pendingProcesses))
 		{
-			//20 sn bekleme suresi gecmisse proses sonlandirilir
+			//if 20 seconds have passed the process is terminated
 			if (Dispatcher.shouldBeTerminated(process))
 			{
 				if(process.isRealTime())
@@ -223,7 +220,7 @@ public class Dispatcher implements IDispatcher{
 		}
 	}
 	
-	//prosesin zamani asip asmadigini kontrol eden fonksiyon
+	//Checks if the process passed in has exceeded maximum waiting time
 	public static boolean shouldBeTerminated(IProcess process)
 	{
 		return !process.isOver() && process.getWaitingTime() >= maxWaitingTime;

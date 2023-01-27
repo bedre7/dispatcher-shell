@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-//Gercek zamanli proses kuyurugu yoneten sinif
+//A queue class used to manage real time processes
 public class RealTimeQueue implements IRealTimeQueue {
 	private Queue<IProcess> queue;
 	
@@ -26,7 +26,8 @@ public class RealTimeQueue implements IRealTimeQueue {
 	public boolean isEmpty() {
 		return this.queue.isEmpty();
 	}
-	//prosesleri FCFS algoritmasina gore calisitiran fonksiyon
+
+	//A function that executes processes in First-Come, First-Served algorithm
 	@Override
 	public void run() throws IOException, InterruptedException 
 	{

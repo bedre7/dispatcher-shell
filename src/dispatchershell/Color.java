@@ -1,6 +1,5 @@
 package dispatchershell;
 
-//Proseslerinin renklerini temsil eden enum
 public enum Color {
 	RED("\u001B[31m"),
 	GREEN("\u001B[32m"),

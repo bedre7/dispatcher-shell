@@ -11,7 +11,6 @@ public class Process implements IProcess {
 	private Color color; 
 	private Priority priority;
 	private State state;
-	private ProcessBuilder processBuilder;
 	
 	public Process(int Id, int arrivalTime, Priority priority, int burstTime, Color color) {
 		this.Id = Id;
@@ -21,56 +20,57 @@ public class Process implements IProcess {
 		this.color = color;
 		this.elapsedTime = 0;
 		this.state = State.NEW;
-		this.processBuilder = new ProcessBuilder(
-				"cmd", "/c", "echo", "\r"
-				).inheritIO();
 	}
-	//prosesi verilen quantuma gore calistiran ve zamanlayiciyi saydiran fonksiyon
+	
+	//executes the process for the amount of quantum provided
 	@Override
 	public State execute(int quantum) throws IOException, InterruptedException {
-		
-//		this.processBuilder.start().waitFor();
-		
 		while (quantum > 0 && !this.isOver()) 
 		{
 			Console.printProcessState(this, "is running");
-			//prosesin calistigi her dongu cevrime kadar zamanlayici artirilir
+			//The timer is ticked for each second the process has executed
 			Timer.tick();
 			
 			this.setState(State.RUNNING);
 			this.elapsedTime++;
 			quantum--;
 		}
-		//proses bekletilir
+
+		//The process's state is updated to "WAITING"
 		this.setState(State.WAITING);
 		
-		//proses bitmisse mesaj yazdirilir
+		//If the process is over
 		if(this.isOver()) {
 			Console.printProcessState(this, "has ended");
 			this.setState(State.TERMINATED);
 		}
-		//son calisma zamani guncellenir
+		
+		//Last execution time is recorded for tracking the waiting time of the process
 		this.lastExecutionTime = Timer.getCurrentTime();
 		
 		return this.getState();
 	}
-	//iki proseslerin oncelik seviyelerini karsilasitiran fonksiyon
+	
+	//Compares the priority of the process passed in with the process this function is called upon
 	@Override
 	public boolean hasHigherPriority(IProcess other) {
 		if (other == null) return true;
 		return this.getPriority().ordinal() < other.getPriority().ordinal();
 	}
-	//bekleme zamanini bulan fonksiyon
+
+	//computes the waiting time of the process
 	@Override
 	public int getWaitingTime() {
 		return Timer.getCurrentTime() - this.lastExecutionTime;
 	}
-	//prosesin bitip bitmedigini kontrol eden fonksiyon
+	
+	//checks whether the process is over
 	@Override
 	public boolean isOver() {
 		return this.getBurstTime() == this.getElapsedTime();
 	}
-	//prosesin gercek zamanli olup olmadigini kontrol eden fonksiyon
+	
+	//Tells if the process is realtime
 	@Override
 	public boolean isRealTime() {
 		return this.priority == Priority.REALTIME;
@@ -111,7 +111,8 @@ public class Process implements IProcess {
 	public Priority getPriority() {
 		return this.priority;
 	}
-	//prosesin onceligini dusuren fonksiyon
+
+	//reduces the priority of the process by 1
 	@Override
 	public void reducePriority() {
 		

@@ -1,6 +1,6 @@
 package dispatchershell;
 
-//proseslerin onceliklerini temsil eden enum
+//Enum defined to represent the priority of processes
 public enum Priority {
 	REALTIME,   		    // Priority 0
 	HIGHESTPRIORITY, 	   // Priority 1

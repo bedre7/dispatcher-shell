@@ -2,9 +2,11 @@ package dispatchershell;
 
 import java.util.Comparator;
 
-//prosesleri onceliklerine gore siralamaya yarayan karsilastirici fonksiyon
-//Note: once proseslerin onceliklerine bakilmaktadir
-//		oncelikleri ayni ise varis zamanlarina gore siralanmaktadir
+/*
+  A comparator class used to compare and sort processes based on their priority
+  Note: First the priority is being used as a paramter to compare two processes
+		if their priority is equal, their arrival time is being used as a factor
+*/
 public class ProcessComparator implements Comparator<IProcess>{
 
 	@Override
