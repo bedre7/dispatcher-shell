@@ -40,7 +40,7 @@ public class Dispatcher implements IDispatcher{
 	public static IDispatcher getInstance(String filePath, int quantum, int maxWaitingTime)
 	{
 		if (instance == null) {
-			return new Dispatcher(filePath, quantum, maxWaitingTime);
+			instance = new Dispatcher(filePath, quantum, maxWaitingTime);
 		}
 		return instance;
 	}
